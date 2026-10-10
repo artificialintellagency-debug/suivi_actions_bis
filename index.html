@@ -118,7 +118,7 @@ dialog input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--l
 
 <dialog id="dlg">
   <h2>Réglages</h2>
-  <p>Colle ici le lien CSV de ton Google Sheet pour afficher les cours en direct. Dans Google Sheets : Fichier, Partager, Publier sur le web, puis choisis le format CSV.</p>
+  <p>Lien CSV de ton Google Sheet (déjà renseigné). Pour en changer : Fichier, Partager, Publier sur le web, format CSV. Laisse vide pour revenir au lien par défaut.</p>
   <label for="url">Lien CSV</label>
   <input id="url" type="url" inputmode="url" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?output=csv" autocomplete="off">
   <div id="err" role="alert"></div>
@@ -130,6 +130,7 @@ dialog input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--l
 </dialog>
 
 <script>
+const DEFAULT_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOSr_VY1h2740L22ABzr75LNq0tRP1TGdxgY-WZE-Cj7FPN21hzeQ0PeYak8EzWiWsjss7T9t3uk4d/pub?gid=0&single=true&output=csv';
 const SNAPSHOT = [["ETN", "Eaton", 425.49, 431.33, 403.36, 375.37, 199.64], ["EXEL", "Exelixis", 59.73, 58.44, 44.96, 38.44, 19.61], ["FSLR", "First Solar", 178.98, 180.13, 200.35, 226.15, 155.9], ["PAVE", "Global X U.S. Infrastructure Development ETF", 49.54, 49.67, 50.67, 43.9, 26.45], ["AINF", "iShares AI Infrastructure UCITS ETF", 20.97, 20.97, null, null, null], ["SEMI", "iShares MSCI Global Semiconductor ETF", 40.95, 41.16, 32.27, 31.71, 18.37], ["MRVL", "Marvell Technology", 272.38, 284.68, 131.3, 89.39, 49.49], ["NBIS", "Nebius NV", 219.74, 237.15, 154.56, 135.46, null], ["POWL", "Powell Industries", 191.61, 197.74, 228.99, 105.33, 24.7], ["PRY", "Prysmian", 122.3, 124.3, 119.7, 88.62, 34.62], ["RKLB", "Rocket Lab", 68.59, 71.92, 70.62, 65.42, 4.14], ["NOW", "ServiceNow Inc", 138.8, 137.87, 89.06, 184.74, 110.88], ["SKHY", "SK hynix", 170.21, 178.25, null, null, null], ["SPCX", "SpaceX", 161.97, 167.6, null, null, null], ["VRT", "Vertiv Holdings Co", 244, 246.49, 299.96, 179, 39.03], ["VST", "Vistra Energy", 157.32, 166.72, 158.2, 209.55, 32.7]];
 const PERIODS = [
   {k:'d1', short:'1 jour',  past:'Il y a 24 h'},
@@ -185,19 +186,22 @@ function num(s){
   const v=parseFloat(s); return isFinite(v)?v:null;
 }
 function parseSheet(text){
-  const rows=parseCSV(text);
-  const h=rows.findIndex(r=>(r[0]||'').trim().toLowerCase()==='ticker');
-  if(h<0) throw new Error('En-tête « Ticker » introuvable');
-  const head=rows[h].map(x=>(x||'').toLowerCase());
+  const t=text.replace(/^\uFEFF/,'');
+  if(/^\s*</.test(t)) throw new Error('le lien renvoie une page web et non du CSV (à la publication, choisis « Valeurs séparées par des virgules »)');
+  const rows=parseCSV(t);
+  const h=rows.findIndex(r=>/^(ticker|symbole|symbol|code)$/i.test((r[0]||'').trim()));
+  const head=h>=0?rows[h].map(x=>(x||'').toLowerCase()):[];
+  const start=h>=0?h+1:rows.findIndex(r=>/^[A-Za-z0-9.:^-]{1,14}$/.test((r[0]||'').trim()) && num(r[2])!=null);
+  if(start<0) throw new Error('aucune ligne de cours reconnue. Début du fichier : « '+t.slice(0,70).replace(/\s+/g,' ')+' »');
   const find=(re,d)=>{const i=head.findIndex(x=>re.test(x));return i<0?d:i};
   const c={ cur:find(/actuel/,2), d1:find(/24\s*h/,3), m6:find(/il y a 6/,5), y1:find(/il y a 1 an/,7), y3:find(/il y a 3/,9) };
   const out=[];
-  for(let i=h+1;i<rows.length;i++){
-    const r=rows[i], t=(r[0]||'').trim();
-    if(!t) break;
-    out.push([t,(r[1]||'').trim(),num(r[c.cur]),num(r[c.d1]),num(r[c.m6]),num(r[c.y1]),num(r[c.y3])]);
+  for(let i=start;i<rows.length;i++){
+    const r=rows[i], tk=(r[0]||'').trim();
+    if(!tk) break;
+    out.push([tk,(r[1]||'').trim(),num(r[c.cur]),num(r[c.d1]),num(r[c.m6]),num(r[c.y1]),num(r[c.y3])]);
   }
-  if(!out.length) throw new Error('Aucune ligne de cours');
+  if(!out.length) throw new Error('aucune ligne de cours');
   return out;
 }
 
@@ -207,15 +211,15 @@ const when = ts => { const d=new Date(ts), now=new Date();
 function setStatus(msg, live){ const s=$('status'); s.textContent=msg; s.className=live?'live':'' }
 
 async function load(){
-  const url=store.get('csvUrl');
+  const url=store.get('csvUrl')||DEFAULT_CSV;
   $('refresh').classList.add('spin');
   try{
     if(!url){
       state.data=fromRows(SNAPSHOT);
-      setStatus('Données intégrées. Ajoute ton lien CSV dans ⚙ pour le direct.');
+      setStatus('Données intégrées (pas de lien CSV).');
     } else {
       const res=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
+      if(!res.ok) throw new Error('Google répond HTTP '+res.status+(res.status===400||res.status===404?' (lien incorrect ou publication arrêtée)':''));
       const rows=parseSheet(await res.text());
       const ts=Date.now();
       store.set('last',JSON.stringify({ts,rows}));
@@ -224,9 +228,11 @@ async function load(){
       setStatus('En direct, mis à jour '+when(ts),true);
     }
   }catch(e){
+    console.error(e);
+    const why = e instanceof TypeError ? 'connexion impossible ou accès refusé par Google' : (e&&e.message?e.message:'erreur inconnue');
     const last=JSON.parse(store.get('last','null')||'null');
-    if(last){ state.data=fromRows(last.rows); setStatus('Hors ligne. Derniers cours reçus '+when(last.ts)+'.') }
-    else { state.data=fromRows(SNAPSHOT); setStatus('Lien CSV illisible, données intégrées affichées.') }
+    if(last){ state.data=fromRows(last.rows); setStatus('Mise à jour impossible : '+why+'. Derniers cours reçus '+when(last.ts)+'.') }
+    else { state.data=fromRows(SNAPSHOT); setStatus('Lien CSV illisible : '+why+'. Données intégrées affichées.') }
   }
   $('refresh').classList.remove('spin');
   render();
@@ -290,7 +296,7 @@ $('mode').addEventListener('click',()=>{ state.full=!state.full; store.set('full
 $('refresh').addEventListener('click',load);
 
 const dlg=$('dlg');
-$('gear').addEventListener('click',()=>{ $('url').value=store.get('csvUrl',''); $('err').textContent=''; dlg.showModal() });
+$('gear').addEventListener('click',()=>{ $('url').value=store.get('csvUrl')||DEFAULT_CSV; $('err').textContent=''; dlg.showModal() });
 $('cancel').addEventListener('click',()=>dlg.close());
 $('save').addEventListener('click',()=>{
   const v=$('url').value.trim();
@@ -305,7 +311,7 @@ window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=
 $('install').addEventListener('click',async()=>{ if(!deferred) return; deferred.prompt(); await deferred.userChoice; deferred=null; $('install').style.display='none' });
 
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible' && store.get('csvUrl') && Date.now()-Number(store.get('lastLoad','0'))>5*60*1000) load();
+  if(document.visibilityState==='visible' && Date.now()-Number(store.get('lastLoad','0'))>5*60*1000) load();
 });
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
