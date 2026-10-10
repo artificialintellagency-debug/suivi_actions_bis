@@ -60,7 +60,8 @@ th.c1{z-index:4;background:var(--navy3)}
 td.v{font-weight:700;font-size:11.5px}
 .up{color:var(--up)} .down{color:var(--down)} .nd{color:var(--muted);font-style:italic;font-weight:400}
 table:not(.full) .pp, table:not(.full) .nm{display:none}
-table.full .c1 small{display:none}
+table.full .c1{min-width:132px}
+table.full .c1 small{max-width:118px}
 table.full th,table.full td{padding:0 12px;letter-spacing:0}
 table.full .v,table.full th.sortable,table.full .px{min-width:78px}
 table.full td.v{font-size:12.5px}
@@ -70,6 +71,23 @@ tfoot tr:nth-child(1) td{bottom:56px;border-top:2px solid var(--gold)}
 tfoot tr:nth-child(2) td{bottom:28px}
 tfoot tr:nth-child(3) td{bottom:0}
 tfoot td.c1{z-index:4;background:var(--navy2);color:var(--muted);font-weight:600;border-right:1px solid var(--line)}
+
+.sc{text-align:left;white-space:normal;min-width:250px;max-width:320px;line-height:1.25;font-size:11.5px;color:var(--muted)}
+th.sc{white-space:nowrap}
+table:not(.full) .sc,table:not(.full) .bp,table:not(.full) .gp{display:none}
+table.full .bs{display:none}
+.px{line-height:1.15}
+.bs{display:block;font-size:10px;font-weight:500;color:var(--gold);margin-top:1px;letter-spacing:0}
+.bs.in{color:var(--up);font-weight:700}
+.bp{font-weight:600;color:var(--gold)}
+.gp{font-weight:700}
+.wait{color:var(--gold)}
+tr.buyz .c1{box-shadow:inset 3px 0 0 var(--up)}
+table:not(.full) tbody tr[data-t]{cursor:pointer}
+tr.dt td{height:auto;padding:0;background:var(--navy2);letter-spacing:0}
+tr.dt td>div{padding:9px 12px;white-space:normal;text-align:left;font-size:12px;line-height:1.4;position:sticky;left:0;max-width:390px}
+tr.dt p+p{margin-top:4px}
+tr.dt span{display:block;font-size:10.5px;color:var(--muted);margin-bottom:1px}
 
 .empty{padding:28px 20px;color:var(--muted);font-size:14px;line-height:1.5;white-space:normal;text-align:left}
 
@@ -131,7 +149,8 @@ dialog input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--l
 
 <script>
 const DEFAULT_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOSr_VY1h2740L22ABzr75LNq0tRP1TGdxgY-WZE-Cj7FPN21hzeQ0PeYak8EzWiWsjss7T9t3uk4d/pub?gid=0&single=true&output=csv';
-const SNAPSHOT = [["ETN", "Eaton", 425.49, 431.33, 403.36, 375.37, 199.64], ["EXEL", "Exelixis", 59.73, 58.44, 44.96, 38.44, 19.61], ["FSLR", "First Solar", 178.98, 180.13, 200.35, 226.15, 155.9], ["PAVE", "Global X U.S. Infrastructure Development ETF", 49.54, 49.67, 50.67, 43.9, 26.45], ["AINF", "iShares AI Infrastructure UCITS ETF", 20.97, 20.97, null, null, null], ["SEMI", "iShares MSCI Global Semiconductor ETF", 40.95, 41.16, 32.27, 31.71, 18.37], ["MRVL", "Marvell Technology", 272.38, 284.68, 131.3, 89.39, 49.49], ["NBIS", "Nebius NV", 219.74, 237.15, 154.56, 135.46, null], ["POWL", "Powell Industries", 191.61, 197.74, 228.99, 105.33, 24.7], ["PRY", "Prysmian", 122.3, 124.3, 119.7, 88.62, 34.62], ["RKLB", "Rocket Lab", 68.59, 71.92, 70.62, 65.42, 4.14], ["NOW", "ServiceNow Inc", 138.8, 137.87, 89.06, 184.74, 110.88], ["SKHY", "SK hynix", 170.21, 178.25, null, null, null], ["SPCX", "SpaceX", 161.97, 167.6, null, null, null], ["VRT", "Vertiv Holdings Co", 244, 246.49, 299.96, 179, 39.03], ["VST", "Vistra Energy", 157.32, 166.72, 158.2, 209.55, 32.7]];
+const SNAPSHOT = [["ETN", "Eaton", 425.49, 431.33, 403.36, 375.37, 199.64], ["EXEL", "Exelixis", 59.73, 58.44, 44.96, 38.44, 19.61], ["FSLR", "First Solar", 178.98, 180.13, 200.35, 226.15, 155.9], ["PAVE", "Global X U.S. Infrastructure Development ETF", 49.54, 49.67, 50.67, 43.9, 26.45], ["AINF", "iShares AI Infrastructure UCITS ETF", 20.97, 20.97, null, null, null], ["SEMI", "iShares MSCI Global Semiconductor ETF", 40.95, 41.16, 32.27, 31.71, 18.37], ["MRVL", "Marvell Technology", 272.38, 284.68, 131.3, 89.39, 49.49], ["NBIS", "Nebius NV", 219.74, 237.15, 154.56, 135.46, null], ["POWL", "Powell Industries", 191.61, 197.74, 228.99, 105.33, 24.7], ["PRY", "Prysmian", 122.3, 124.3, 119.7, 88.62, 34.62], ["RKLB", "Rocket Lab", 68.59, 71.92, 70.62, 65.42, 4.14], ["NOW", "ServiceNow Inc", 138.8, 137.87, 89.06, 184.74, 110.88], ["SKHY", "SK hynix", 170.21, 178.25, null, null, null], ["SPCX", "SpaceX", 161.97, 167.6, null, null, null], ["VRT", "Vertiv Holdings Co", 244, 246.49, 299.96, 179, 39.03], ["VST", "Vistra Energy", 157.32, 166.72, 158.2, 209.55, 32.7], ["COHR", "Coherent", null, null, null, null, null], ["LITE", "Lumentum", null, null, null, null, null], ["TYO:6324", "Harmonic Drive System", null, null, null, null, null], ["TYO:6954", "Fanuc", null, null, null, null, null], ["SYM", "Symbotic", null, null, null, null, null]];
+const META = {"ETN": ["Électrification, distribution électrique, data centers", 350], "EXEL": ["Biotechnologie, oncologie", null], "FSLR": ["Énergie solaire, panneaux photovoltaïques", 145], "PAVE": ["Infrastructures américaines, construction, électrification", 40], "AINF": ["Infrastructure IA, data centers, semi-conducteurs et énergie", null], "SEMI": ["Semi-conducteurs, puces et équipements", null], "MRVL": ["Semi-conducteurs, connectivité IA, photonique et data centers", 230], "NBIS": ["Cloud IA, GPU calculs hautes performances et data centers", 170], "POWL": ["Électrification lourde & Matériel Électrique", 160], "PRY": ["Câbles Haute Tension & Réseaux Électriques / Data", 100], "RKLB": ["Spatial, lanceurs, satellites et défense", 50], "NOW": ["Logiciel SaaS Enterprise & IA Opérationnelle", 120], "SKHY": ["Mémoires Haute Performance (HBM pour l'IA)", null], "SPCX": ["Spatial, lanceurs, Starlink et communications", null], "VRT": ["Refroidissement, alimentation électrique et data centers", 200], "VST": ["Production électrique, nucléaire et gaz", 130], "COHR": ["Photonique, lasers et composants optiques", 240], "LITE": ["Photonique, lasers et interconnexions optiques", 800], "TYO:6324": ["Composants de Précision & Réducteurs Robotiques", 4800], "TYO:6954": ["Robots industriels, automatisation et CNC", 5500], "SYM": ["Robotique logistique, automatisation d'entrepôts", 34]}; // secteur et prix d'achat, utilisés si le Sheet n'a pas ces colonnes
 const PERIODS = [
   {k:'d1', short:'1 jour',  past:'Il y a 24 h'},
   {k:'m6', short:'6 mois',  past:'Il y a 6 mois'},
@@ -145,7 +164,7 @@ const store = {
   del:k=>{try{localStorage.removeItem(k)}catch(e){}}
 };
 // sort.key : null = ordre du tableau d'origine ; sinon 't' ou une période. dir : 'desc' | 'asc'
-let state = { data: [], full: store.get('full')==='1', sort:{key:null,dir:'desc'} };
+let state = { data: [], full: store.get('full')==='1', sort:{key:null,dir:'desc'}, open:null };
 
 /* ---------- format ---------- */
 const nfP1 = new Intl.NumberFormat('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1,useGrouping:false});
@@ -159,7 +178,12 @@ const cls = v => v==null ? 'nd' : (v>=0.0005?'up':(v<=-0.0005?'down':'nd'));
 const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- données ---------- */
-const fromRows = rows => rows.map(r=>({t:r[0], n:r[1], cur:r[2], old:{d1:r[3], m6:r[4], y1:r[5], y3:r[6]}}));
+const fromRows = rows => rows.map(r=>{
+  const key=String(r[0]).replace(/\s+/g,''), m=META[key];
+  return { t:key, n:r[1], cur:r[2], old:{d1:r[3], m6:r[4], y1:r[5], y3:r[6]},
+    sec: typeof r[7]==='string' ? r[7] : (m?m[0]:''),
+    buy: typeof r[8]==='number' ? r[8] : (r[8]==='' ? null : (m?m[1]:null)) };
+});
 const perf = (it,k) => (it.cur!=null && it.old[k]!=null && it.old[k]!==0) ? (it.cur-it.old[k])/it.old[k] : null;
 
 function parseCSV(text){
@@ -194,12 +218,15 @@ function parseSheet(text){
   const start=h>=0?h+1:rows.findIndex(r=>/^[A-Za-z0-9.:^-]{1,14}$/.test((r[0]||'').trim()) && num(r[2])!=null);
   if(start<0) throw new Error('aucune ligne de cours reconnue. Début du fichier : « '+t.slice(0,70).replace(/\s+/g,' ')+' »');
   const find=(re,d)=>{const i=head.findIndex(x=>re.test(x));return i<0?d:i};
-  const c={ cur:find(/actuel/,2), d1:find(/24\s*h/,3), m6:find(/il y a 6/,5), y1:find(/il y a 1 an/,7), y3:find(/il y a 3/,9) };
+  const c={ cur:find(/actuel/,2), d1:find(/24\s*h/,3), m6:find(/il y a 6/,5), y1:find(/il y a 1 an/,7), y3:find(/il y a 3/,9), sec:find(/secteur/,-1), buy:find(/achat/,-1) };
   const out=[];
   for(let i=start;i<rows.length;i++){
     const r=rows[i], tk=(r[0]||'').trim();
     if(!tk) break;
-    out.push([tk,(r[1]||'').trim(),num(r[c.cur]),num(r[c.d1]),num(r[c.m6]),num(r[c.y1]),num(r[c.y3])]);
+    const bv = c.buy>=0 ? num(r[c.buy]) : undefined;
+    out.push([tk,(r[1]||'').trim(),num(r[c.cur]),num(r[c.d1]),num(r[c.m6]),num(r[c.y1]),num(r[c.y3]),
+      c.sec>=0 ? (r[c.sec]||'').trim() : undefined,
+      c.buy>=0 ? (bv==null?'':bv) : undefined]);
   }
   if(!out.length) throw new Error('aucune ligne de cours');
   return out;
@@ -239,6 +266,9 @@ async function load(){
 }
 
 /* ---------- affichage ---------- */
+const nfB = new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2,useGrouping:false});
+const disp = t => t.replace(/^[A-Za-z]+:/,'');
+
 function render(){
   const {sort,full}=state;
   $('tbl').className=full?'full':'';
@@ -247,11 +277,16 @@ function render(){
   const arrow=k=>sort.key===k?(sort.dir==='desc'?' ↓':' ↑'):'';
   $('thead').innerHTML='<tr>'+
     `<th class="c1 sortable ${sort.key==='t'?'on':''}" data-s="t">Ticker${arrow('t')}</th>`+
-    '<th class="nm" style="text-align:left">Nom</th><th>Prix</th>'+
+    '<th>Prix</th><th class="bp">Achat reco.</th>'+
+    `<th class="gp sortable ${sort.key==='gap'?'on':''}" data-s="gap">Écart achat${arrow('gap')}</th>`+
     PERIODS.map(p=>`<th class="pp">${p.past}</th><th class="sortable ${sort.key===p.k?'on':''}" data-s="${p.k}">${p.short}${arrow(p.k)}</th>`).join('')+
-    '</tr>';
+    '<th class="sc">Secteur</th></tr>';
 
-  let rows=state.data.map(it=>({it,p:Object.fromEntries(PERIODS.map(q=>[q.k,perf(it,q.k)]))}));
+  let rows=state.data.map(it=>{
+    const p=Object.fromEntries(PERIODS.map(q=>[q.k,perf(it,q.k)]));
+    p.gap=(it.cur!=null&&it.buy)?(it.cur-it.buy)/it.buy:null;
+    return {it,p};
+  });
   if(sort.key){
     const m=sort.dir==='desc'?-1:1;
     rows.sort((a,b)=>{
@@ -270,14 +305,29 @@ function render(){
     const a=(0.07+0.28*Math.sqrt(Math.min(1,Math.abs(v)/col[k].max))).toFixed(2);
     return `style="background:${v>0?`rgba(63,207,142,${a})`:`rgba(255,114,102,${a})`}"`; };
 
-  $('tbody').innerHTML = rows.map(({it,p})=>
-    `<tr><td class="c1"><b>${esc(it.t)}</b><small>${esc(it.n)}</small></td>`+
-    `<td class="nm">${esc(it.n)}</td><td class="px">${fmtPx(it.cur)}</td>`+
-    PERIODS.map(q=>`<td class="pp">${fmtPx(it.old[q.k])}</td><td class="v ${cls(p[q.k])}" ${tint(p[q.k],q.k)}>${fmtPct(p[q.k])}</td>`).join('')+
-    '</tr>').join('') || '<tr><td class="empty" colspan="11">Aucun cours à afficher.</td></tr>';
+  $('tbody').innerHTML = rows.map(({it,p})=>{
+    const zone = it.buy && it.cur!=null && it.cur<=it.buy;
+    const isOpen = !full && state.open===it.t;
+    const bs = it.buy ? `<span class="bs ${zone?'in':''}">${zone?'✓':'→'} ${nfB.format(it.buy)}</span>` : '';
+    let html=`<tr class="${zone?'buyz':''}" data-t="${esc(it.t)}">`+
+      `<td class="c1"><b>${esc(disp(it.t))}</b><small>${esc(it.n)}</small></td>`+
+      `<td class="px">${fmtPx(it.cur)}${bs}</td>`+
+      `<td class="bp">${it.buy?nfB.format(it.buy):''}</td>`+
+      `<td class="gp ${p.gap==null?'':(p.gap<=0?'up':'wait')}">${p.gap==null?'':fmtPct(p.gap)}</td>`+
+      PERIODS.map(q=>`<td class="pp">${fmtPx(it.old[q.k])}</td><td class="v ${cls(p[q.k])}" ${tint(p[q.k],q.k)}>${fmtPct(p[q.k])}</td>`).join('')+
+      `<td class="sc">${esc(it.sec||'')}</td></tr>`;
+    if(isOpen && (it.sec||it.buy)){
+      const g=p.gap, pctTxt = g==null?'':nfP1.format(Math.abs(g)*100)+' %';
+      html+=`<tr class="dt"><td colspan="6"><div>`+
+        (it.sec?`<p><span>Secteur</span>${esc(it.sec)}</p>`:'')+
+        (it.buy?`<p><span>Achat recommandé</span>${nfB.format(it.buy)}${g==null?'':' · '+(g<=0?`<b class="up">✓ cours ${pctTxt} sous ton prix</b>`:`cours ${pctTxt} au-dessus`)}</p>`:'')+
+        `</div></td></tr>`;
+    }
+    return html;
+  }).join('') || '<tr><td class="empty" colspan="6">Aucun cours à afficher.</td></tr>';
 
-  const foot=(label,key)=>`<tr><td class="c1">${label}</td><td class="nm"></td><td></td>`+
-    PERIODS.map(q=>`<td class="pp"></td><td class="${cls(col[q.k][key])}">${fmtPct(col[q.k][key])}</td>`).join('')+'</tr>';
+  const foot=(label,key)=>`<tr><td class="c1">${label}</td><td></td><td class="bp"></td><td class="gp"></td>`+
+    PERIODS.map(q=>`<td class="pp"></td><td class="${cls(col[q.k][key])}">${fmtPct(col[q.k][key])}</td>`).join('')+'<td class="sc"></td></tr>';
   $('tfoot').innerHTML=foot('Moyenne','avg')+foot('Meilleur','hi')+foot('Moins bon','lo');
 }
 
@@ -286,11 +336,16 @@ $('thead').addEventListener('click',e=>{
   const th=e.target.closest('th.sortable'); if(!th) return;
   const k=th.dataset.s, s=state.sort;
   // 1er appui : décroissant (A→Z pour le ticker), 2e : inverse, 3e : ordre d'origine
-  const first = k==='t' ? 'asc' : 'desc';
+  const first = (k==='t'||k==='gap') ? 'asc' : 'desc';
   if(s.key!==k) state.sort={key:k,dir:first};
   else if(s.dir===first) state.sort={key:k,dir:first==='desc'?'asc':'desc'};
   else state.sort={key:null,dir:'desc'};
   render();
+});
+$('tbody').addEventListener('click',e=>{
+  if(state.full) return;
+  const tr=e.target.closest('tr[data-t]'); if(!tr) return;
+  state.open = state.open===tr.dataset.t ? null : tr.dataset.t; render();
 });
 $('mode').addEventListener('click',()=>{ state.full=!state.full; store.set('full',state.full?'1':'0'); render() });
 $('refresh').addEventListener('click',load);
